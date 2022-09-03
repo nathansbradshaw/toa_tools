@@ -9,6 +9,18 @@ export default class Main extends Phaser.Scene {
   private trueTileMarker!: TrueTileMarker;
   private goalTileMarker!: TrueTileMarker;
   private tick = 0;
+  private debouncer = 0;
+  grid = [0, 0, 0, 0, 0, 0, 0, 0];
+  tilesToGrid = [
+    { x: 1, y: 1 },
+    { x: 3, y: 1 },
+    { x: 5, y: 1 },
+    { x: 1, y: 3 },
+    { x: 5, y: 3 },
+    { x: 1, y: 5 },
+    { x: 3, y: 5 },
+    { x: 5, y: 5 },
+  ];
 
   constructor() {
     super({ key: key.scene.main });
@@ -29,7 +41,7 @@ export default class Main extends Phaser.Scene {
     this.physics.world.bounds.width = layer.width;
     this.physics.world.bounds.height = layer.height;
 
-    this.trueTileMarker = new TrueTileMarker(this, this.map);
+    // this.trueTileMarker = new TrueTileMarker(this, this.map);
     this.goalTileMarker = new TrueTileMarker(this, this.map, 0x00ff00);
 
     this.cameras.main.setBounds(
@@ -39,25 +51,40 @@ export default class Main extends Phaser.Scene {
       this.map.heightInPixels
     );
     this.cameras.main.setZoom(2.68);
-
-    this.marker = this.add.graphics();
-    this.marker.lineStyle(2, 0x000000, 1);
-    this.marker.strokeRect(0, 0, this.map.tileWidth, this.map.tileHeight);
   }
 
   update() {
+    for (let i = 0; i < this.tilesToGrid.length; i++) {
+      const tile = this.tilesToGrid[i];
+      const tileIndex = this.map.getTileAt(tile.x, tile.y)?.index;
+      if (tileIndex === 1) {
+        this.grid[i] = 1;
+      } else {
+        this.grid[i] = 0;
+      }
+    }
+
+    console.log(this.grid);
     const worldPoint = this.input.activePointer.positionToCamera(
       this.cameras.main
     );
     const pointerTileX = this.map.worldToTileX(worldPoint.x);
     const pointerTileY = this.map.worldToTileY(worldPoint.y);
     // console.log("update");
-    this.marker.update();
     this.goalTileMarker.update(
       this.map.tileToWorldX(pointerTileX),
       this.map.tileToWorldY(pointerTileY)
     );
-    if (this.input.activePointer.isDown) {
+    if (this.input.activePointer.isDown && this.debouncer <= 0) {
+      if (this.map.getTileAt(pointerTileX, pointerTileY)?.index === 2) {
+        this.map.putTileAt(1, pointerTileX, pointerTileY);
+      } else if (this.map.getTileAt(pointerTileX, pointerTileY)?.index === 1) {
+        this.map.putTileAt(2, pointerTileX, pointerTileY);
+      }
+      this.debouncer = 10;
+    }
+    if (this.debouncer > 0) {
+      this.debouncer--;
     }
   }
 }
