@@ -12,6 +12,7 @@ export default class Main extends Phaser.Scene {
   private tick = 0;
   private debouncer = 0;
   grid = [1, 1, 1, 1, 1, 1, 1, 1];
+  solution = [1, 1, 1, 1, 1, 1, 1, 1];
   tilesToGrid = [
     { x: 1, y: 1 },
     { x: 3, y: 1 },
@@ -56,16 +57,26 @@ export default class Main extends Phaser.Scene {
   }
 
   update() {
+    this.solveGrid();
+
     // set the graphics based on the values of the grid
     for (let i = 0; i < this.tilesToGrid.length; i++) {
-      this.map.putTileAt(
-        this.grid[i] + 1,
-        this.tilesToGrid[i].x,
-        this.tilesToGrid[i].y
-      );
+      if (this.solution[i] === 1) {
+        this.map.putTileAt(
+          this.grid[i] + 1,
+          this.tilesToGrid[i].x,
+          this.tilesToGrid[i].y
+        );
+      } else {
+        this.map.putTileAt(
+          this.grid[i] ? 5 : 4,
+          this.tilesToGrid[i].x,
+          this.tilesToGrid[i].y
+        );
+      }
     }
 
-    console.log(this.grid);
+    // console.log(this.grid);
     const worldPoint = this.input.activePointer.positionToCamera(
       this.cameras.main
     );
@@ -80,8 +91,11 @@ export default class Main extends Phaser.Scene {
       if (this.input.activePointer.rightButtonDown()) {
         const tile = this.map.getTileAt(pointerTileX, pointerTileY);
         const gridLocation = this.gridLocation(tile.x, tile.y);
+
         if (gridLocation !== -1) {
           this.grid = handleMove(gridLocation, this.grid);
+        } else {
+          this.solveGrid();
         }
         console.log("right click");
       } else {
@@ -105,5 +119,45 @@ export default class Main extends Phaser.Scene {
       }
     }
     return -1;
+  }
+
+  solveGrid() {
+    const A00 =
+      (this.grid[0] +
+        this.grid[2] +
+        this.grid[4] +
+        this.grid[5] +
+        this.grid[6]) %
+      2;
+    const A01 = (this.grid[5] + this.grid[6] + this.grid[7]) % 2;
+    const A02 =
+      (this.grid[0] +
+        this.grid[2] +
+        this.grid[3] +
+        this.grid[6] +
+        this.grid[7]) %
+      2;
+    const A10 = (this.grid[2] + this.grid[4] + this.grid[7]) % 2;
+    const A12 = (this.grid[0] + this.grid[3] + this.grid[5]) % 2;
+    const A20 =
+      (this.grid[0] +
+        this.grid[1] +
+        this.grid[4] +
+        this.grid[5] +
+        this.grid[7]) %
+      2;
+    const A21 = (this.grid[0] + this.grid[1] + this.grid[2]) % 2;
+    const A23 =
+      (this.grid[1] +
+        this.grid[2] +
+        this.grid[3] +
+        this.grid[5] +
+        this.grid[7]) %
+      2;
+    const solution = [A00, A01, A02, A10, A12, A20, A21, A23];
+    console.log(" solution", solution);
+    this.solution = solution;
+    return solution;
+    // TODO
   }
 }

@@ -28,11 +28,11 @@
   "tileheight": 32,
   "tilesets": [
     {
-      "columns": 2,
+      "columns": 3,
       "firstgid": 1,
       "image": "toa_tile_set.png",
       "imageheight": 32,
-      "imagewidth": 96,
+      "imagewidth": 160,
       "margin": 0,
       "name": "toa_tile_set",
       "spacing": 0,
