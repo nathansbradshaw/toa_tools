@@ -129,7 +129,13 @@ export default class Main extends Phaser.Scene {
         this.grid[5] +
         this.grid[6]) %
       2;
-    const A01 = (this.grid[5] + this.grid[6] + this.grid[7]) % 2;
+    const A01 =
+      (this.grid[1] +
+        this.grid[3] +
+        this.grid[4] +
+        this.grid[5] +
+        this.grid[7]) %
+      2;
     const A02 =
       (this.grid[0] +
         this.grid[2] +
@@ -137,8 +143,20 @@ export default class Main extends Phaser.Scene {
         this.grid[6] +
         this.grid[7]) %
       2;
-    const A10 = (this.grid[2] + this.grid[4] + this.grid[7]) % 2;
-    const A12 = (this.grid[0] + this.grid[3] + this.grid[5]) % 2;
+    const A10 =
+      (this.grid[1] +
+        this.grid[2] +
+        this.grid[3] +
+        this.grid[6] +
+        this.grid[7]) %
+      2;
+    const A12 =
+      (this.grid[0] +
+        this.grid[1] +
+        this.grid[4] +
+        this.grid[5] +
+        this.grid[6]) %
+      2;
     const A20 =
       (this.grid[0] +
         this.grid[1] +
@@ -146,7 +164,13 @@ export default class Main extends Phaser.Scene {
         this.grid[5] +
         this.grid[7]) %
       2;
-    const A21 = (this.grid[0] + this.grid[1] + this.grid[2]) % 2;
+    const A21 =
+      (this.grid[0] +
+        this.grid[2] +
+        this.grid[3] +
+        this.grid[4] +
+        this.grid[6]) %
+      2;
     const A23 =
       (this.grid[1] +
         this.grid[2] +
