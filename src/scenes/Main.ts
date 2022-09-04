@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import TrueTileMarker from "../actors/trueTileMarker";
 
 import { key } from "../data/key";
+import { handleMove } from "../data/moves";
 
 export default class Main extends Phaser.Scene {
   private marker!: Phaser.GameObjects.Graphics;
@@ -10,7 +11,7 @@ export default class Main extends Phaser.Scene {
   private goalTileMarker!: TrueTileMarker;
   private tick = 0;
   private debouncer = 0;
-  grid = [0, 0, 0, 0, 0, 0, 0, 0];
+  grid = [1, 1, 1, 1, 1, 1, 1, 1];
   tilesToGrid = [
     { x: 1, y: 1 },
     { x: 3, y: 1 },
@@ -27,6 +28,7 @@ export default class Main extends Phaser.Scene {
   }
 
   create() {
+    this.input.mouse.disableContextMenu();
     console.log("create map");
     this.map = this.make.tilemap({ key: key.tilemap.map });
     console.log("create tileset");
@@ -54,14 +56,13 @@ export default class Main extends Phaser.Scene {
   }
 
   update() {
+    // set the graphics based on the values of the grid
     for (let i = 0; i < this.tilesToGrid.length; i++) {
-      const tile = this.tilesToGrid[i];
-      const tileIndex = this.map.getTileAt(tile.x, tile.y)?.index;
-      if (tileIndex === 1) {
-        this.grid[i] = 1;
-      } else {
-        this.grid[i] = 0;
-      }
+      this.map.putTileAt(
+        this.grid[i] + 1,
+        this.tilesToGrid[i].x,
+        this.tilesToGrid[i].y
+      );
     }
 
     console.log(this.grid);
@@ -76,15 +77,33 @@ export default class Main extends Phaser.Scene {
       this.map.tileToWorldY(pointerTileY)
     );
     if (this.input.activePointer.isDown && this.debouncer <= 0) {
-      if (this.map.getTileAt(pointerTileX, pointerTileY)?.index === 2) {
-        this.map.putTileAt(1, pointerTileX, pointerTileY);
-      } else if (this.map.getTileAt(pointerTileX, pointerTileY)?.index === 1) {
-        this.map.putTileAt(2, pointerTileX, pointerTileY);
+      if (this.input.activePointer.rightButtonDown()) {
+        const tile = this.map.getTileAt(pointerTileX, pointerTileY);
+        const gridLocation = this.gridLocation(tile.x, tile.y);
+        if (gridLocation !== -1) {
+          this.grid = handleMove(gridLocation, this.grid);
+        }
+        console.log("right click");
+      } else {
+        const tile = this.map.getTileAt(pointerTileX, pointerTileY);
+        const gridLocation = this.gridLocation(tile.x, tile.y);
+        if (gridLocation !== -1) {
+          this.grid[gridLocation] = this.grid[gridLocation] === 0 ? 1 : 0;
+        }
       }
       this.debouncer = 10;
     }
     if (this.debouncer > 0) {
       this.debouncer--;
     }
+  }
+
+  gridLocation(x: number, y: number) {
+    for (let i = 0; i < this.tilesToGrid.length; i++) {
+      if (x === this.tilesToGrid[i].x && y === this.tilesToGrid[i].y) {
+        return i;
+      }
+    }
+    return -1;
   }
 }
