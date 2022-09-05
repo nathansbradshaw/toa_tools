@@ -80,12 +80,12 @@ export default class Main extends Phaser.Scene {
     const worldPoint = this.input.activePointer.positionToCamera(
       this.cameras.main
     );
-    const pointerTileX = this.map.worldToTileX(worldPoint.x);
-    const pointerTileY = this.map.worldToTileY(worldPoint.y);
+    const pointerTileX = this.map.worldToTileX(worldPoint.x) ?? 0;
+    const pointerTileY = this.map.worldToTileY(worldPoint.y) ?? 0;
     // console.log("update");
     this.goalTileMarker.update(
-      this.map.tileToWorldX(pointerTileX),
-      this.map.tileToWorldY(pointerTileY)
+      this.map.tileToWorldX(pointerTileX) ?? 0,
+      this.map.tileToWorldY(pointerTileY) ?? 0
     );
     if (this.input.activePointer.isDown && this.debouncer <= 0) {
       if (this.input.activePointer.rightButtonDown()) {
@@ -99,7 +99,10 @@ export default class Main extends Phaser.Scene {
         }
         console.log("right click");
       } else {
-        const tile = this.map.getTileAt(pointerTileX, pointerTileY);
+        const tile = this.map.getTileAt(pointerTileX, pointerTileY) ?? {
+          x: 0,
+          y: 0,
+        };
         const gridLocation = this.gridLocation(tile.x, tile.y);
         if (gridLocation !== -1) {
           this.grid[gridLocation] = this.grid[gridLocation] === 0 ? 1 : 0;
@@ -187,7 +190,7 @@ export default class Main extends Phaser.Scene {
         2) +
       1;
     const solution = [A00, A01, A02, A10, A12, A20, A21, A23];
-    console.log(" solution", solution);
+    // console.log(" solution", solution);
     this.solution = solution;
     return solution;
     // TODO
