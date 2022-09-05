@@ -11,8 +11,8 @@ export default class Main extends Phaser.Scene {
   private goalTileMarker!: TrueTileMarker;
   private tick = 0;
   private debouncer = 0;
-  grid = [1, 1, 1, 1, 1, 1, 1, 1];
-  solution = [1, 1, 1, 1, 1, 1, 1, 1];
+  grid = [0, 0, 0, 0, 0, 0, 0, 0];
+  solution = [0, 0, 0, 0, 0, 0, 0, 0];
   tilesToGrid = [
     { x: 1, y: 1 },
     { x: 3, y: 1 },
@@ -105,7 +105,7 @@ export default class Main extends Phaser.Scene {
           this.grid[gridLocation] = this.grid[gridLocation] === 0 ? 1 : 0;
         }
       }
-      this.debouncer = 10;
+      this.debouncer = 20;
     }
     if (this.debouncer > 0) {
       this.debouncer--;
@@ -123,61 +123,69 @@ export default class Main extends Phaser.Scene {
 
   solveGrid() {
     const A00 =
-      (this.grid[0] +
+      ((this.grid[0] +
         this.grid[2] +
         this.grid[4] +
         this.grid[5] +
         this.grid[6]) %
-      2;
+        2) +
+      1;
     const A01 =
-      (this.grid[1] +
+      ((this.grid[1] +
         this.grid[3] +
         this.grid[4] +
         this.grid[5] +
         this.grid[7]) %
-      2;
+        2) +
+      1;
     const A02 =
-      (this.grid[0] +
+      ((this.grid[0] +
         this.grid[2] +
         this.grid[3] +
         this.grid[6] +
         this.grid[7]) %
-      2;
+        2) +
+      1;
     const A10 =
-      (this.grid[1] +
+      ((this.grid[1] +
         this.grid[2] +
         this.grid[3] +
         this.grid[6] +
         this.grid[7]) %
-      2;
+        2) +
+      1;
     const A12 =
-      (this.grid[0] +
+      ((this.grid[0] +
         this.grid[1] +
         this.grid[4] +
         this.grid[5] +
         this.grid[6]) %
-      2;
+        2) +
+      1;
     const A20 =
-      (this.grid[0] +
+      ((this.grid[0] +
         this.grid[1] +
         this.grid[4] +
         this.grid[5] +
         this.grid[7]) %
-      2;
+        2) +
+      1;
     const A21 =
-      (this.grid[0] +
+      ((this.grid[0] +
         this.grid[2] +
         this.grid[3] +
         this.grid[4] +
         this.grid[6]) %
-      2;
+        2) +
+      1;
     const A23 =
-      (this.grid[1] +
+      ((this.grid[1] +
         this.grid[2] +
         this.grid[3] +
         this.grid[5] +
         this.grid[7]) %
-      2;
+        2) +
+      1;
     const solution = [A00, A01, A02, A10, A12, A20, A21, A23];
     console.log(" solution", solution);
     this.solution = solution;
